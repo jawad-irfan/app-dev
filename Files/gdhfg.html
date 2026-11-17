@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CIT Login Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
+
+  html, body { width:100%; overflow-x:hidden; }
+
+  body {
+    min-height:100vh;
+    background: radial-gradient(circle at top, #1a1a1a, #000000 70%);
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    padding:20px;
+  }
+
+  .bg-glow {
+    position:absolute; width:min(600px, 90vw); height:min(600px, 90vw);
+    background: radial-gradient(circle, rgba(212,175,55,0.25), transparent 70%);
+    top:-150px; left:50%; transform:translateX(-50%);
+    filter: blur(40px); animation: pulse 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
+
+  .card-wrapper {
+    position:relative; z-index:2;
+    width:100%; max-width:400px;
+    padding:40px 30px;
+    background: linear-gradient(145deg,#111,#1c1c1c);
+    border:1px solid rgba(212,175,55,0.4);
+    border-radius:20px;
+    box-shadow: 0 0 40px rgba(212,175,55,0.15), 0 20px 60px rgba(0,0,0,0.6);
+    text-align:center;
+    animation: floatIn .8s ease;
+  }
+
+  @media (max-width: 420px) {
+    .card-wrapper { padding:32px 20px; border-radius:16px; }
+    .brand { font-size:20px; letter-spacing:2px; }
+    .crown { font-size:32px; }
+  }
+  @keyframes floatIn { from{opacity:0; transform:translateY(30px)} to{opacity:1; transform:translateY(0)} }
+
+  .crown { font-size:40px; margin-bottom:5px; filter: drop-shadow(0 0 10px gold); }
+  .brand { font-family:'Cinzel',serif; color:#d4af37; letter-spacing:4px; font-size:24px; margin-bottom:5px; }
+  .tagline { color:#999; font-size:11px; letter-spacing:2px; margin-bottom:25px; text-transform:uppercase; }
+
+  .tabs { display:flex; background:#0d0d0d; border-radius:30px; padding:5px; margin-bottom:22px; border:1px solid #2a2a2a; }
+  .tab-btn { flex:1; padding:10px; background:transparent; border:none; color:#888; font-weight:600; border-radius:25px; cursor:pointer; transition:.3s; letter-spacing:1px; }
+  .tab-btn.active { background: linear-gradient(135deg,#d4af37,#b8860b); color:#000; box-shadow:0 0 15px rgba(212,175,55,.5); }
+
+  .auth-form.hidden { display:none; }
+
+  .input-group { position:relative; margin-bottom:22px; }
+  .input-group input, .input-group select {
+    width:100%; padding:14px 12px; background:#0d0d0d; border:1px solid #333;
+    border-radius:10px; color:#fff; font-size:14px; outline:none; transition:.3s;
+  }
+  .input-group input:focus, .input-group select:focus { border-color:#d4af37; box-shadow:0 0 10px rgba(212,175,55,.3); }
+  .input-group label { position:absolute; left:12px; top:14px; color:#777; font-size:13px; pointer-events:none; transition:.2s ease; }
+  .input-group input:focus + label, .input-group input:not(:placeholder-shown) + label {
+    top:-9px; left:10px; font-size:11px; color:#d4af37; background:#111; padding:0 6px;
+  }
+  .input-group select { color:#777; }
+  .input-group select:valid { color:#fff; }
+  .select-label { display:block; text-align:left; font-size:11px; color:#d4af37; margin-bottom:6px; letter-spacing:1px; }
+
+  .gold-btn {
+    width:100%; padding:14px; background: linear-gradient(135deg,#f4d97b,#d4af37,#a97e1c);
+    border:none; border-radius:10px; color:#000; font-weight:700; letter-spacing:1px;
+    font-size:14px; cursor:pointer; transition:.3s; text-transform:uppercase;
+  }
+  .gold-btn:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(212,175,55,.45); }
+
+  .message { min-height:20px; font-size:13px; margin-bottom:8px; }
+  .message.success { color:#4caf50; }
+  .message.error { color:#ff5c5c; }
+
+  .dashboard h2 { color:#d4af37; font-family:'Cinzel',serif; margin-bottom:8px; font-size:20px; }
+  .dashboard p { color:#aaa; font-size:13px; margin-bottom:4px; }
+  .badge {
+    display:inline-block; margin-top:15px; padding:6px 16px; border:1px solid #d4af37;
+    border-radius:20px; color:#d4af37; font-size:11px; letter-spacing:1px;
+  }
+  .logout-btn {
+    margin-top:22px; background:transparent; border:1px solid #d4af37; color:#d4af37;
+    padding:10px 20px; border-radius:8px; cursor:pointer; transition:.3s; width:100%;
+  }
+  .logout-btn:hover { background:#d4af37; color:#000; }
+
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<!-- LOGIN / SIGNUP CARD -->
+<div class="card-wrapper" id="authCard">
+  <div class="crown">👑</div>
+  <h1 class="brand">CIT Login PORTAL</h1>
+  <p class="tagline">DAE CIT Students • Exclusive Access</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="loginTab">Login</button>
+    <button class="tab-btn" id="signupTab">Sign Up</button>
+  </div>
+
+  <div id="message" class="message"></div>
+
+  <!-- LOGIN FORM -->
+  <form id="loginForm" class="auth-form">
+    <div class="input-group">
+      <input type="text" id="loginRoll" placeholder=" " required />
+      <label>Roll Number</label>
+    </div>
+    <div class="input-group">
+      <input type="password" id="loginPassword" placeholder=" " required />
+      <label>Password</label>
+    </div>
+    <button type="submit" class="gold-btn">Enter Portal</button>
+  </form>
+
+  <!-- SIGNUP FORM -->
+  <form id="signupForm" class="auth-form hidden">
+    <div class="input-group">
+      <input type="text" id="signupName" placeholder=" " required />
+      <label>Full Name</label>
+    </div>
+    <div class="input-group">
+      <input type="text" id="signupRoll" placeholder=" " required />
+      <label>Roll Number</label>
+    </div>
+    <div class="input-group">
+      <label class="select-label"></label>
+      <select id="signupSemester" required>
+        <option value="" disabled selected>Diploma Year</option>
+        <option>1st</option><option>2nd</option><option>3rd</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <input type="password" id="signupPassword" placeholder=" " required />
+      <label>Password</label>
+    </div>
+    <button type="submit" class="gold-btn">Create Account</button>
+  </form>
+</div>
+
+<!-- DASHBOARD CARD -->
+<div class="card-wrapper dashboard hidden" id="dashboardCard">
+  <div class="crown">👑</div>
+  <h2 id="welcomeText">WELCOM TO CIT</h2>
+  <p id="rollText"></p>
+  <p id="semText"></p>
+  <span class="badge">DAE CIT MEMBER</span>
+  <br>
+  <button class="logout-btn" id="logoutBtn">Logout</button>
+</div>
+
+<script>
+  // ---------- "DATABASE" (browser localStorage) ----------
+  // Key "vvip_users" ke andar sab students ka data JSON array me store hota hai.
+  function getUsers() {
+    return JSON.parse(localStorage.getItem("vvip_users") || "[]");
+  }
+  function saveUsers(users) {
+    localStorage.setItem("vvip_users", JSON.stringify(users));
+  }
+
+  const authCard = document.getElementById("authCard");
+  const dashboardCard = document.getElementById("dashboardCard");
+  const loginTab = document.getElementById("loginTab");
+  const signupTab = document.getElementById("signupTab");
+  const loginForm = document.getElementById("loginForm");
+  const signupForm = document.getElementById("signupForm");
+  const message = document.getElementById("message");
+
+  loginTab.onclick = () => {
+    loginTab.classList.add("active"); signupTab.classList.remove("active");
+    loginForm.classList.remove("hidden"); signupForm.classList.add("hidden");
+    message.textContent = "";
+  };
+  signupTab.onclick = () => {
+    signupTab.classList.add("active"); loginTab.classList.remove("active");
+    signupForm.classList.remove("hidden"); loginForm.classList.add("hidden");
+    message.textContent = "";
+  };
+
+  function showMessage(text, type) {
+    message.textContent = text;
+    message.className = "message " + type;
+  }
+
+  // ---------- SIGN UP ----------
+  signupForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const fullName = document.getElementById("signupName").value.trim();
+    const roll = document.getElementById("signupRoll").value.trim();
+    const semester = document.getElementById("signupSemester").value;
+    const password = document.getElementById("signupPassword").value;
+
+    if (password.length < 4) {
+      showMessage("Password must be at least 4 characters long.", "error");
+      return;
+    }
+
+    let users = getUsers();
+    if (users.some(u => u.roll === roll)) {
+      showMessage("This Roll NO. is already used", "error");
+      return;
+    }
+
+    users.push({ fullName, roll, semester, password });
+    saveUsers(users);
+
+    showMessage("Account Created successfully!");
+    signupForm.reset();
+    setTimeout(() => loginTab.click(), 1000);
+  });
+
+  // ---------- LOGIN ----------
+  loginForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const roll = document.getElementById("loginRoll").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    const users = getUsers();
+    const user = users.find(u => u.roll === roll && u.password === password);
+
+    if (!user) {
+      showMessage("Roll Number or Password is wrong", "error");
+      return;
+    }
+
+    localStorage.setItem("vip_current_user", roll);
+    showDashboard(user);
+  });
+
+  function showDashboard(user) {
+    authCard.classList.add("hidden");
+    dashboardCard.classList.remove("hidden");
+    document.getElementById("welcomeText").textContent = "Welcom, " + user.fullName;
+    document.getElementById("rollText").textContent = "Roll No: " + user.roll;
+    document.getElementById("semText").textContent = "Year : " + user.semester;
+  }
+
+  document.getElementById("logoutBtn").onclick = function () {
+    localStorage.removeItem("vip_current_user");
+    dashboardCard.classList.add("hidden");
+    authCard.classList.remove("hidden");
+    loginForm.reset();
+  };
+
+  // Page load par check karein ke pehle se koi logged in hai
+  (function checkSession() {
+    const currentRoll = localStorage.getItem("vvip_current_user");
+    if (currentRoll) {
+      const users = getUsers();
+      const user = users.find(u => u.roll === currentRoll);
+      if (user) showDashboard(user);
+    }
+  })();
+</script>
+
+</body>
+</html>
