@@ -1,6 +1,5 @@
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/material.dart';
 import 'package:my_app/main.dart';
 
 void main() {
@@ -14,10 +13,7 @@ void main() {
 
     await tester.pump();
 
-    expect(
-      find.text('8').first,
-      findsOneWidget,
-    );
+    expect(find.text('8').first, findsOneWidget);
   });
 
   testWidgets('Calculator clear button test', (tester) async {
@@ -27,9 +23,6 @@ void main() {
     await tester.tap(find.text('C').last);
     await tester.pump();
 
-    expect(
-      find.text('0').first,
-      findsOneWidget,
-    );
+    expect(find.text('0').first, findsOneWidget);
   });
 }
