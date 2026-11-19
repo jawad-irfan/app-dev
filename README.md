@@ -19,3 +19,4 @@ samples, guidance on mobile development, and a full API reference.
 Git practical completed by Muhammad Jawad Irfan.
 Learning Git Branching - Feature Practice.
 My First GitHub Pull Request.
+Git Conflict Testing - Version B
